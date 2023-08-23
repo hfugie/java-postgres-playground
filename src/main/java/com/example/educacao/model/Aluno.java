@@ -3,7 +3,9 @@ package com.example.educacao.model;
 public class Aluno {
     private Integer matricula;
     private String nome;
-    private double nota1, nota2, nota3;
+    private double nota1;
+    private double nota2;
+    private double nota3;
 
     public Integer getMatricula() {
         return matricula;

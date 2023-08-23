@@ -7,7 +7,6 @@ import java.sql.Statement;
 import com.example.dao.DAO;
 import com.example.educacao.model.Aluno;
 
-import javafx.fxml.LoadException;
 
 public class AlunoDAO extends DAO {
 
@@ -15,23 +14,32 @@ public class AlunoDAO extends DAO {
         super(conn);
     }
 
-    public void insert(Aluno aluno) throws SQLException{
+    public void inserir(Aluno aluno) throws SQLException{
         try {
             var sql = "insert into aluno (nome) values (?)";
             var statement = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            statement.execute();
+            statement.setString(1, aluno.getNome());
+            statement.executeUpdate();
             var result = statement.getGeneratedKeys();
             if (result.next()){
-                aluno.setMatricula(null);
+                aluno.setMatricula(result.getInt(1));
             }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+        } catch (SQLException e) {
+            throw new RuntimeException("Não foi possível inserir o aluno", e);
         }
     }
     
     public void inserirNota(int idDisciplina, double nota, int matricula){
-        try{
+        if (idDisciplina <= 0)
+            throw new IllegalArgumentException("O id da dispciplina deve estar entre 1 e 3");
 
+        try{
+            var sql = "update aluno set nota" + idDisciplina + " = ? where matricula = ?";
+            System.out.println(sql);
+            var statement = conn.prepareStatement(sql);
+            statement.setDouble(1, nota);
+            statement.setInt(2, matricula);
+            statement.execute();
         } catch(SQLException e){
             throw new RuntimeException(e);
         }
